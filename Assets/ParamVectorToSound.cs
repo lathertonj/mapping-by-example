@@ -196,18 +196,18 @@ public class ParamVectorToSound : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if( Input.GetKeyDown( "space" ) )
-        {
-            float[] newParams = new float[9];
-            for( int i = 0; i < newParams.Length; i++ )
-            {
-                newParams[i] = Random.Range( 0f, 1f );
-            }
-            SetParams( newParams );
-        }
+		// if( Input.GetKeyDown( "space" ) )
+        // {
+        //     float[] newParams = new float[9];
+        //     for( int i = 0; i < newParams.Length; i++ )
+        //     {
+        //         newParams[i] = Random.Range( 0f, 1f );
+        //     }
+        //     SetParams( newParams );
+        // }
 	}
 
-	void SetParams( float[] zeroOneParams )
+	public void SetParams( float[] zeroOneParams )
 	{
         // turn sound off 
 		myChuck.BroadcastEvent( myTurnOffEvent );
@@ -237,4 +237,26 @@ public class ParamVectorToSound : MonoBehaviour {
         // turn sound on
 		myChuck.BroadcastEvent( myTurnOnEvent );
 	}
+
+    public void SetParamsDirectly( float[] parameters )
+    {
+        // turn sound off 
+		myChuck.BroadcastEvent( myTurnOffEvent );
+
+        // check vector length
+		if( parameters.Length != 9 ) { Debug.Log( "wrong number of params..." ); return; }
+
+		myChuck.SetFloat( myFreq, parameters[0] );
+		myChuck.SetFloat( myDelaySeconds, parameters[1] );
+		myChuck.SetFloat( myTimbreLFO, parameters[2] );
+		myChuck.SetFloat( myPitchLFORate, parameters[3] );
+		myChuck.SetFloat( myPitchLFODepthMultiplier, parameters[4] );
+		myChuck.SetFloat( myHPFFreq, parameters[5] );
+		myChuck.SetFloat( myLPFFreq, parameters[6] );
+		myChuck.SetFloat( myAmpModLFOFreq, parameters[7] );
+		myChuck.SetFloat( myAmpModDepth, parameters[8] );
+
+        // turn sound on
+		myChuck.BroadcastEvent( myTurnOnEvent );
+    }
 }
