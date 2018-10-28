@@ -9,7 +9,7 @@ public class RapidMixRegression : MonoBehaviour
     private System.UInt32 myTrainingID, myRegressionID, myOutputLength;
     private bool haveTrained = false;
 
-    public enum RegressionType { NeuralNetworkRegression, XMMRegression, LinearRegression };
+    public enum RegressionType { NeuralNetworkRegression, GaussianMixtureRegression, LinearRegression };
 
     public RegressionType regressionType;
 
@@ -22,7 +22,7 @@ public class RapidMixRegression : MonoBehaviour
             case RegressionType.NeuralNetworkRegression:
                 myRegressionID = createNewStaticRegression();
                 break;
-            case RegressionType.XMMRegression:
+            case RegressionType.GaussianMixtureRegression:
                 myRegressionID = createNewStaticXMMRegression();
                 break;
             case RegressionType.LinearRegression:
@@ -60,7 +60,7 @@ public class RapidMixRegression : MonoBehaviour
             case RegressionType.NeuralNetworkRegression:
                 trainStaticRegression( myRegressionID, myTrainingID );
                 break;
-            case RegressionType.XMMRegression:
+            case RegressionType.GaussianMixtureRegression:
                 trainStaticXMMRegression( myRegressionID, myTrainingID );
                 break;
             case RegressionType.LinearRegression:
@@ -88,7 +88,7 @@ public class RapidMixRegression : MonoBehaviour
                     output, (System.UInt32) output.Length
                 );
                 break;
-            case RegressionType.XMMRegression:
+            case RegressionType.GaussianMixtureRegression:
                 runStaticXMMRegression(
                     myRegressionID,
                     input, (System.UInt32) input.Length,
@@ -110,7 +110,7 @@ public class RapidMixRegression : MonoBehaviour
             case RegressionType.NeuralNetworkRegression:
                 resetStaticRegression( myRegressionID );
                 break;
-            case RegressionType.XMMRegression:
+            case RegressionType.GaussianMixtureRegression:
                 resetStaticXMMRegression( myRegressionID );
                 break;
             case RegressionType.LinearRegression:
