@@ -9,10 +9,26 @@ public class RapidMixRegression : MonoBehaviour
     private System.UInt32 myTrainingID, myRegressionID, myOutputLength;
     private bool haveTrained = false;
 
+    public enum RegressionType { NeuralNetworkRegression, XMMRegression, LinearRegression };
+
+    public RegressionType regressionType;
+
+    // TODO: try xmmStaticRegression
     void Awake()
     {
         myTrainingID = createEmptyTrainingData();
-        myRegressionID = createNewStaticRegression();
+        switch( regressionType )
+        {
+            case RegressionType.NeuralNetworkRegression:
+                myRegressionID = createNewStaticRegression();
+                break;
+            case RegressionType.XMMRegression:
+                myRegressionID = createNewStaticXMMRegression();
+                break;
+            case RegressionType.LinearRegression:
+                Debug.Log( "linear regression not implemented yet" );
+                break;
+        }
         myOutputLength = 0;
     }
 
@@ -39,7 +55,19 @@ public class RapidMixRegression : MonoBehaviour
 
     public void Train()
     {
-        trainStaticRegression( myRegressionID, myTrainingID );
+        switch( regressionType )
+        {
+            case RegressionType.NeuralNetworkRegression:
+                trainStaticRegression( myRegressionID, myTrainingID );
+                break;
+            case RegressionType.XMMRegression:
+                trainStaticXMMRegression( myRegressionID, myTrainingID );
+                break;
+            case RegressionType.LinearRegression:
+                Debug.Log( "linear regression not implemented yet" );
+                break;
+        }
+        
         haveTrained = true;
     }
 
@@ -51,17 +79,45 @@ public class RapidMixRegression : MonoBehaviour
             return new double[]{ };
         }
         double [] output = new double[myOutputLength];
-        runStaticRegression(
-            myRegressionID,
-            input, (System.UInt32) input.Length,
-            output, (System.UInt32) output.Length
-        );
+        switch( regressionType )
+        {
+            case RegressionType.NeuralNetworkRegression:
+                runStaticRegression(
+                    myRegressionID,
+                    input, (System.UInt32) input.Length,
+                    output, (System.UInt32) output.Length
+                );
+                break;
+            case RegressionType.XMMRegression:
+                runStaticXMMRegression(
+                    myRegressionID,
+                    input, (System.UInt32) input.Length,
+                    output, (System.UInt32) output.Length
+                );
+                break;
+            case RegressionType.LinearRegression:
+                Debug.Log( "linear regression not implemented yet" );
+                break;
+        }
+        
         return output;
     }
 
     public void ResetRegression()
     {
-        resetStaticRegression( myRegressionID );
+        switch( regressionType )
+        {
+            case RegressionType.NeuralNetworkRegression:
+                resetStaticRegression( myRegressionID );
+                break;
+            case RegressionType.XMMRegression:
+                resetStaticXMMRegression( myRegressionID );
+                break;
+            case RegressionType.LinearRegression:
+                Debug.Log( "linear regression not implemented yet" );
+                break;
+        }
+        
         haveTrained = false;
         resetTrainingData( myTrainingID ); // deletes and recreates the dataset
         myOutputLength = 0; // to enable if the dataset can also be reset
@@ -79,6 +135,9 @@ public class RapidMixRegression : MonoBehaviour
     private static extern System.UInt32 createNewStaticRegression();
 
     [DllImport( PLUGIN_NAME )]
+    private static extern System.UInt32 createNewStaticXMMRegression();
+
+    [DllImport( PLUGIN_NAME )]
     private static extern bool recordSingleTrainingElement(
         System.UInt32 trainingID,
         double[] input, System.UInt32 n_input,
@@ -89,6 +148,9 @@ public class RapidMixRegression : MonoBehaviour
     private static extern bool trainStaticRegression( System.UInt32 regressionID, System.UInt32 trainingID );
 
     [DllImport( PLUGIN_NAME )]
+    private static extern bool trainStaticXMMRegression( System.UInt32 XMMRegressionID, System.UInt32 trainingID );
+
+    [DllImport( PLUGIN_NAME )]
     private static extern bool runStaticRegression(
         System.UInt32 regressionID,
         double[] input, System.UInt32 n_input,
@@ -96,6 +158,18 @@ public class RapidMixRegression : MonoBehaviour
     );
 
     [DllImport( PLUGIN_NAME )]
+    private static extern bool runStaticXMMRegression(
+        System.UInt32 XMMRegressionID,
+        double[] input, System.UInt32 n_input,
+        double[] output, System.UInt32 n_output
+    );
+
+    [DllImport( PLUGIN_NAME )]
     private static extern bool resetStaticRegression( System.UInt32 regressionID );
+
+    [DllImport( PLUGIN_NAME )]
+    private static extern bool resetStaticXMMRegression( System.UInt32 XMMRegressionID );
+
+    // TODO: call cleanupRapidMixApi()
 
 }
