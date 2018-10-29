@@ -22,6 +22,7 @@ public class RegressionMapping : MonoBehaviour
     private double[] myCurrentInput = null;
     private double[] myCurrentOutput = null;
     public RegressionMappingExample mappingObjectPrefab;
+    public bool useCrossInputs;
     private RapidMixRegression[] myRegressions;
 
     // TODO: save the examples you currently have placed and enable you to arrow back through them
@@ -36,6 +37,7 @@ public class RegressionMapping : MonoBehaviour
         mySynth = GetComponent<ParamVectorToSound>();
         myCurrentExample = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         myCurrentInput = new double[] { 0, 0, 0 };
+            
         myCurrentOutput = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         myRegressions = GetComponentsInChildren<RapidMixRegression>();
     }
@@ -88,13 +90,20 @@ public class RegressionMapping : MonoBehaviour
     {
         // query regressions for new sample
         myCurrentInput[0] = transform.position.x;
-        myCurrentInput[1] = transform.position.y;
         myCurrentInput[2] = transform.position.z;
+        myCurrentInput[1] = transform.position.y;
 
         // get output
         for( int i = 0; i < myRegressions.Length; i++ )
         {
-            myCurrentOutput[i] = myRegressions[i].Run( myCurrentInput )[0];
+            if( useCrossInputs )
+            {
+                myCurrentOutput[i] = myRegressions[i].Run( CrossInput( myCurrentInput ) )[0];
+            }
+            else
+            {
+                myCurrentOutput[i] = myRegressions[i].Run( myCurrentInput )[0];
+            }
         }
 
         // play it
@@ -111,7 +120,14 @@ public class RegressionMapping : MonoBehaviour
             // give it all the input, output pairs [3 -> 1]
             foreach( RegressionMappingExample example in RegressionMappingExample.GetAllExamples() )
             {
-                myRegressions[i].RecordDataPoint( example.GetIn(), new double[] { example.GetOut()[i] } );
+                if( useCrossInputs )
+                {
+                    myRegressions[i].RecordDataPoint( CrossInput( example.GetIn() ), new double[] { example.GetOut()[i] } );
+                }
+                else
+                {
+                    myRegressions[i].RecordDataPoint( example.GetIn(), new double[] { example.GetOut()[i] } );
+                }
             }
 
             // tell it to train
@@ -161,6 +177,21 @@ public class RegressionMapping : MonoBehaviour
 
         // turn off my sound when I place something
         GetComponent<ChuckSubInstance>().SetRunning( false );
+    }
+
+    double[] CrossInput( double[] input )
+    {
+        double[] ret = new double[9];
+        ret[0] = input[0];
+        ret[1] = input[1];
+        ret[2] = input[2];
+        ret[3] = input[0] * input[0];
+        ret[4] = input[0] * input[1];
+        ret[5] = input[0] * input[2];
+        ret[6] = input[1] * input[1];
+        ret[7] = input[1] * input[2];
+        ret[8] = input[2] * input[2];
+        return ret;
     }
 
     float[] DoubleToFloat( double[] input )
