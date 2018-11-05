@@ -445,6 +445,7 @@ public class ChuckMainInstance : MonoBehaviour
     private int myBufferLength;
 
     private bool hasInit = false;
+    private bool haveMic = false;
 
 
     void Awake()
@@ -475,6 +476,9 @@ public class ChuckMainInstance : MonoBehaviour
 
     private void SetupMic()
     {
+        // oops no mics on this system
+        if( Microphone.devices.Length == 0 ) { return; }
+
         // default device
         myMicDevice = "";
         // try to find one that matches identifier
@@ -501,6 +505,8 @@ public class ChuckMainInstance : MonoBehaviour
         while( !( Microphone.GetPosition( myMicDevice ) > 0 ) ) { };
         // play audio source!
         mySource.Play();
+        // we have a mic!
+        haveMic = true;
     }
 
     public string GetUniqueVariableName()
@@ -523,6 +529,12 @@ public class ChuckMainInstance : MonoBehaviour
             // sadness -- num channels has changed so we must reconstruct myOutBuffer
             myNumChannels = channels;
             myOutBuffer = new float[myBufferLength * myNumChannels];
+        }
+
+        // if no mic, zero out the input data
+        if( !haveMic )
+        {
+            Array.Clear( data, 0, data.Length );
         }
 
         // advance the MasterInstance to the now we need
