@@ -51,6 +51,12 @@ public class RegressionMapping : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // compute
+        if( regressionIsRunning )
+        {
+            RunRegression();
+        }
+
         // grip 
         if( Controller.GetPressDown( SteamVR_Controller.ButtonMask.Grip ) )
         {
@@ -94,28 +100,38 @@ public class RegressionMapping : MonoBehaviour
                     MakeNewExample();
                 }
             }
-        }
-        if( touchpadPos != Vector2.zero && inPlaceExamplesMode )
-        {
-            if( touchpadPos.x < 0 )
+            else
             {
-                // cycle through presets
-                myText.text = "Cycle through presets";
+                // in runtime mode, capture the current output as a preset
+                AddPreset( myCurrentOutput );
+            }
+        }
+
+        // touchpad text
+        if( touchpadPos != Vector2.zero )
+        {
+            if( inPlaceExamplesMode )
+            {
+                if( touchpadPos.x < 0 )
+                {
+                    // cycle through presets
+                    myText.text = "Cycle through presets";
+                }
+                else
+                {
+                    // place new random example
+                    myText.text = "Generate new random example";
+                }
             }
             else
             {
-                // place new random example
-                myText.text = "Generate new random example";
+                // runtime mode
+                myText.text = "Capture current sound as preset";
             }
         }
         else
         {
             myText.text = "";
-        }
-
-        if( regressionIsRunning )
-        {
-            RunRegression();
         }
     }
 
@@ -210,7 +226,7 @@ public class RegressionMapping : MonoBehaviour
             myCurrentPresetIndex = myPreviousPresets.Count - 1;
         }
 
-        myCurrentExample = myPreviousPresets[ myCurrentPresetIndex ];
+        myCurrentExample = myPreviousPresets[myCurrentPresetIndex];
 
         PlayMyCurrentExample();
     }
@@ -233,8 +249,13 @@ public class RegressionMapping : MonoBehaviour
         GetComponent<ChuckSubInstance>().SetRunning( false );
 
         // when an example is spawned, add it to my preset list
-        double[] storedExample = new double[ myCurrentExample.Length ];
-        for( int i = 0; i < myCurrentExample.Length; i++ ) { storedExample[i] = myCurrentExample[i]; }
+        AddPreset( myCurrentExample );
+    }
+
+    void AddPreset( double[] preset )
+    {
+        double[] storedExample = new double[preset.Length];
+        for( int i = 0; i < preset.Length; i++ ) { storedExample[i] = preset[i]; }
         myPreviousPresets.Add( storedExample );
         myCurrentPresetIndex = myPreviousPresets.Count;
     }
