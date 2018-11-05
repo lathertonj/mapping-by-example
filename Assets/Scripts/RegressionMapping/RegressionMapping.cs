@@ -25,7 +25,10 @@ public class RegressionMapping : MonoBehaviour
     public bool useCrossInputs;
     private RapidMixRegression[] myRegressions;
 
-    // TODO: save the examples you currently have placed and enable you to arrow back through them
+    private List<double[]> myPreviousPresets;
+    private int myCurrentPresetIndex;
+    private TextMesh myText;
+
     // TODO: enable you to capture new examples from runtime mode
     // TODO: enable you to delete examples from the world
     // TODO: visualize spheres better (I wonder if they could glow the closer you are to them?)
@@ -36,9 +39,13 @@ public class RegressionMapping : MonoBehaviour
         mySynth = GetComponent<ParamVectorToSound>();
         myCurrentExample = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         myCurrentInput = new double[] { 0, 0, 0 };
-            
+
         myCurrentOutput = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         myRegressions = GetComponentsInChildren<RapidMixRegression>();
+
+
+        myPreviousPresets = new List<double[]>();
+        myText = GetComponentInChildren<TextMesh>();
     }
 
     // Update is called once per frame
@@ -71,12 +78,39 @@ public class RegressionMapping : MonoBehaviour
         }
 
         // touchpad
+        Vector2 touchpadPos = Controller.GetAxis();
         if( Controller.GetPressDown( SteamVR_Controller.ButtonMask.Touchpad ) )
         {
             if( inPlaceExamplesMode )
             {
-                MakeNewExample();
+                if( touchpadPos.x < 0 )
+                {
+                    // cycle through presets
+                    PlayNextPreset();
+                }
+                else
+                {
+                    // play something new
+                    MakeNewExample();
+                }
             }
+        }
+        if( touchpadPos != Vector2.zero && inPlaceExamplesMode )
+        {
+            if( touchpadPos.x < 0 )
+            {
+                // cycle through presets
+                myText.text = "Cycle through presets";
+            }
+            else
+            {
+                // place new random example
+                myText.text = "Generate new random example";
+            }
+        }
+        else
+        {
+            myText.text = "";
         }
 
         if( regressionIsRunning )
@@ -111,8 +145,6 @@ public class RegressionMapping : MonoBehaviour
 
     void EnterRuntimeMode()
     {
-        // TODO: reset data given to each algorithm. need to make a new empty training data? or empty the one we have.
-
         // for each regression:
         for( int i = 0; i < myCurrentExample.Length; i++ )
         {
@@ -162,6 +194,29 @@ public class RegressionMapping : MonoBehaviour
             myCurrentExample[i] = Random.Range( 0f, 1f );
         }
 
+        PlayMyCurrentExample();
+    }
+
+    void PlayNextPreset()
+    {
+        if( myPreviousPresets.Count == 0 )
+        {
+            return;
+        }
+
+        myCurrentPresetIndex--;
+        if( myCurrentPresetIndex < 0 )
+        {
+            myCurrentPresetIndex = myPreviousPresets.Count - 1;
+        }
+
+        myCurrentExample = myPreviousPresets[ myCurrentPresetIndex ];
+
+        PlayMyCurrentExample();
+    }
+
+    void PlayMyCurrentExample()
+    {
         // start chuck running
         GetComponent<ChuckSubInstance>().SetRunning( true );
 
@@ -176,6 +231,12 @@ public class RegressionMapping : MonoBehaviour
 
         // turn off my sound when I place something
         GetComponent<ChuckSubInstance>().SetRunning( false );
+
+        // when an example is spawned, add it to my preset list
+        double[] storedExample = new double[ myCurrentExample.Length ];
+        for( int i = 0; i < myCurrentExample.Length; i++ ) { storedExample[i] = myCurrentExample[i]; }
+        myPreviousPresets.Add( storedExample );
+        myCurrentPresetIndex = myPreviousPresets.Count;
     }
 
     double[] CrossInput( double[] input )
