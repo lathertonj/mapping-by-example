@@ -9,7 +9,7 @@ public class RapidMixRegression : MonoBehaviour
     private System.UInt32 myTrainingID, myRegressionID, myOutputLength, myInputLength;
     private bool haveTrained = false;
 
-    public enum RegressionType { NeuralNetworkRegression, GaussianMixtureRegression, LinearRegression };
+    public enum RegressionType { LinearRegression, NeuralNetworkRegression, GaussianMixtureRegression };
 
     public RegressionType regressionType;
 
@@ -26,7 +26,8 @@ public class RapidMixRegression : MonoBehaviour
                 myRegressionID = createNewStaticRegression();
                 break;
             case RegressionType.GaussianMixtureRegression:
-                myRegressionID = createNewStaticGMRegression();
+                Debug.Log( "Gaussian Mixture Regression is currently broken" );
+                // myRegressionID = createNewStaticGMRegression();
                 break;
             case RegressionType.LinearRegression:
                 myLinearRegressionInputs = new List<double[]>();
@@ -83,7 +84,7 @@ public class RapidMixRegression : MonoBehaviour
                 trainStaticRegression( myRegressionID, myTrainingID );
                 break;
             case RegressionType.GaussianMixtureRegression:
-                trainStaticGMRegression( myRegressionID, myTrainingID );
+                // trainStaticGMRegression( myRegressionID, myTrainingID );
                 break;
             case RegressionType.LinearRegression:
                 TrainLinearRegression();
@@ -164,11 +165,11 @@ public class RapidMixRegression : MonoBehaviour
                 );
                 break;
             case RegressionType.GaussianMixtureRegression:
-                runStaticGMRegression(
-                    myRegressionID,
-                    input, (System.UInt32)input.Length,
-                    output, (System.UInt32)output.Length
-                );
+                // runStaticGMRegression(
+                //     myRegressionID,
+                //     input, (System.UInt32)input.Length,
+                //     output, (System.UInt32)output.Length
+                // );
                 break;
             case RegressionType.LinearRegression:
                 RunLinearRegression( input, output );
@@ -191,7 +192,7 @@ public class RapidMixRegression : MonoBehaviour
                 resetStaticRegression( myRegressionID );
                 break;
             case RegressionType.GaussianMixtureRegression:
-                resetStaticGMRegression( myRegressionID );
+                // resetStaticGMRegression( myRegressionID );
                 break;
             case RegressionType.LinearRegression:
                 // nothing to reset. weights are recreated on Train().

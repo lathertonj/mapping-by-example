@@ -29,7 +29,6 @@ public class RegressionMapping : MonoBehaviour
     // TODO: enable you to capture new examples from runtime mode
     // TODO: enable you to delete examples from the world
     // TODO: visualize spheres better (I wonder if they could glow the closer you are to them?)
-    // TODO: try other models besides the specific regression model I'm using?
 
     // Use this for initialization
     void Start()
