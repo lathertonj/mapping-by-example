@@ -5,6 +5,7 @@ using UnityEngine;
 public class RegressionMappingExample : MonoBehaviour
 {
 	private static List<RegressionMappingExample> allExamples;
+	private MeshRenderer myRenderer;
 	private void Awake()
 	{
 		if( allExamples == null )
@@ -12,6 +13,8 @@ public class RegressionMappingExample : MonoBehaviour
 			allExamples = new List<RegressionMappingExample>();
 		}
 		allExamples.Add( this );
+
+		myRenderer = GetComponentInChildren<MeshRenderer>();
 	}
 
 	public static List<RegressionMappingExample> GetAllExamples()
@@ -34,4 +37,20 @@ public class RegressionMappingExample : MonoBehaviour
 	{
 		return myOut;
 	}
+
+	public void Highlight()
+	{
+		myRenderer.material.color = Color.red;
+	}
+
+	public void ResetHighlight()
+	{
+		myRenderer.material.color = Color.white;
+	}
+
+	void OnDestroy()
+	{
+		allExamples.Remove( this );
+	}
+
 }

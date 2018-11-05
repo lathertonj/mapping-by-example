@@ -28,10 +28,10 @@ public class RegressionMapping : MonoBehaviour
     private List<double[]> myPreviousPresets;
     private int myCurrentPresetIndex;
     private TextMesh myText;
+    private RegressionMappingExample intersectingExample = null;
 
-    // TODO: enable you to capture new examples from runtime mode
-    // TODO: enable you to delete examples from the world
     // TODO: visualize spheres better (I wonder if they could glow the closer you are to them?)
+    // TODO: make the deletion process more smooth in appearance
 
     // Use this for initialization
     void Start()
@@ -87,7 +87,14 @@ public class RegressionMapping : MonoBehaviour
         Vector2 touchpadPos = Controller.GetAxis();
         if( Controller.GetPressDown( SteamVR_Controller.ButtonMask.Touchpad ) )
         {
-            if( inPlaceExamplesMode )
+            // first check if we are intersecting
+            if( intersectingExample != null && touchpadPos.y < -0.3f )
+            {
+                // delete the example
+                Destroy( intersectingExample.gameObject );
+                intersectingExample = null;
+            }
+            else if( inPlaceExamplesMode )
             {
                 if( touchpadPos.x < 0 )
                 {
@@ -110,7 +117,13 @@ public class RegressionMapping : MonoBehaviour
         // touchpad text
         if( touchpadPos != Vector2.zero )
         {
-            if( inPlaceExamplesMode )
+            // first check if we are intersecting
+            if( intersectingExample != null && touchpadPos.y < -0.3f )
+            {
+                myText.text = "Delete current example";
+                intersectingExample.Highlight();
+            }
+            else if( inPlaceExamplesMode )
             {
                 if( touchpadPos.x < 0 )
                 {
@@ -132,6 +145,12 @@ public class RegressionMapping : MonoBehaviour
         else
         {
             myText.text = "";
+        }
+
+        // undo highlight
+        if( intersectingExample != null && touchpadPos.y >= -0.3f )
+        {
+            intersectingExample.ResetHighlight();
         }
     }
 
@@ -280,5 +299,39 @@ public class RegressionMapping : MonoBehaviour
         float[] output = new float[input.Length];
         for( int i = 0; i < input.Length; i++ ) { output[i] = (float)input[i]; }
         return output;
+    }
+
+    void OnTriggerEnter( Collider other )
+    {
+        if( intersectingExample != null ) { return; }
+        RegressionMappingExample maybeExample = other.GetComponentInParent<RegressionMappingExample>();
+        if( maybeExample != null )
+        {
+            intersectingExample = maybeExample;
+        }
+    }
+
+    void OnTriggerStay( Collider other )
+    {
+        if( intersectingExample != null ) { return; }
+        RegressionMappingExample maybeExample = other.GetComponentInParent<RegressionMappingExample>();
+        if( maybeExample != null )
+        {
+            intersectingExample = maybeExample;
+        }
+    }
+
+    void OnTriggerExit( Collider other )
+    {
+        if( intersectingExample == null ) { return; }
+        RegressionMappingExample maybeExample = other.GetComponentInParent<RegressionMappingExample>();
+        if( maybeExample == intersectingExample )
+        {
+            // color it back to white
+            intersectingExample.ResetHighlight();
+
+            // forget it
+            intersectingExample = null;
+        }
     }
 }
