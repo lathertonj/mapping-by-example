@@ -152,6 +152,14 @@ public class RegressionMapping : MonoBehaviour
         {
             intersectingExample.ResetHighlight();
         }
+
+        // alpha values
+        foreach( RegressionMappingExample example in RegressionMappingExample.GetAllExamples() )
+        {
+            float sqrDist = ( transform.position - example.transform.position ).sqrMagnitude;
+            Debug.Log( sqrDist );
+            example.SetActiveness( sqrDist.MapClamp( 0, 2, 1, 0 ) );
+        }
     }
 
     void RunRegression()

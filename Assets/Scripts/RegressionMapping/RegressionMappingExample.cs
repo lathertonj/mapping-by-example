@@ -6,6 +6,7 @@ public class RegressionMappingExample : MonoBehaviour
 {
 	private static List<RegressionMappingExample> allExamples;
 	private MeshRenderer myRenderer;
+	private Color myOriginalColor;
 	private void Awake()
 	{
 		if( allExamples == null )
@@ -15,10 +16,15 @@ public class RegressionMappingExample : MonoBehaviour
 		allExamples.Add( this );
 
 		myRenderer = GetComponentInChildren<MeshRenderer>();
+		myOriginalColor = myRenderer.material.color;
 	}
 
 	public static List<RegressionMappingExample> GetAllExamples()
 	{
+		if( allExamples == null )
+		{
+			allExamples = new List<RegressionMappingExample>();
+		}
 		return allExamples;
 	}
 
@@ -45,7 +51,15 @@ public class RegressionMappingExample : MonoBehaviour
 
 	public void ResetHighlight()
 	{
-		myRenderer.material.color = Color.white;
+		myRenderer.material.color = myOriginalColor;
+	}
+
+	public void SetActiveness( float activeness )
+	{
+		activeness = Mathf.Clamp01( activeness );
+		Color c = myRenderer.material.color;
+		c.a = activeness;
+		myRenderer.material.color = c;
 	}
 
 	void OnDestroy()
