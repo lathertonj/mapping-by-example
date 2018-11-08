@@ -154,6 +154,16 @@ public class RapidMixRegression : MonoBehaviour
             Debug.LogError( "Regression can't Run() without having Train()ed first!" );
             return new double[] { };
         }
+        if( input.Length != myInputLength )
+        {
+            Debug.LogError( string.Format( 
+                "Regression training data is of dimensionality {0} but input provided has dimensionality {1}", 
+                input.Length, myInputLength
+            ) );
+            return new double[] { };
+        
+        }
+
         double[] output = new double[myOutputLength];
         switch( regressionType )
         {
