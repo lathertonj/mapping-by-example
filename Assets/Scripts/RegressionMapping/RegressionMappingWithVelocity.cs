@@ -306,9 +306,6 @@ public class RegressionMappingWithVelocity : MonoBehaviour
         // parent it to me
         currentlyPlacingExample.transform.parent = transform;
 
-        // turn off my sound when I place something
-        GetComponent<ChuckSubInstance>().SetRunning( false );
-
         // when an example is spawned, add it to my preset list
         AddPreset( myCurrentExample );
     }
@@ -318,6 +315,9 @@ public class RegressionMappingWithVelocity : MonoBehaviour
         currentlyPlacingExample.FinishRecording();
         currentlyPlacingExample.transform.parent = null;
         currentlyPlacingExample = null;
+        // turn off my sound when I place something
+        GetComponent<ChuckSubInstance>().SetRunning( false );
+
     }
 
     void AddPreset( double[] preset )
