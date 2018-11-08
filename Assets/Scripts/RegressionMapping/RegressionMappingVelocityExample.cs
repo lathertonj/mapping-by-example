@@ -8,6 +8,7 @@ public class RegressionMappingVelocityExample : MonoBehaviour
 	private MeshRenderer myRenderer;
 	private Color myOriginalColor;
 	private List<double[]> myInputs;
+	private List<Vector3> myPositions;
 	private void Awake()
 	{
 		if( allExamples == null )
@@ -19,6 +20,7 @@ public class RegressionMappingVelocityExample : MonoBehaviour
 		myRenderer = GetComponentInChildren<MeshRenderer>();
 		myOriginalColor = myRenderer.material.color;
 		myInputs = new List<double[]>();
+		myPositions = new List<Vector3>();
 	}
 
 	public static List<RegressionMappingVelocityExample> GetAllExamples()
@@ -39,13 +41,14 @@ public class RegressionMappingVelocityExample : MonoBehaviour
 	public void RecordIn( Vector3 position, Vector3 velocity, Vector3 angularVelocity )
 	{
 		myInputs.Add( GetInput( position, velocity, angularVelocity ) );
+		myPositions.Add( position );
 	}
 
-	// TODO: use angular velocity or not?
+	// TODO: which of these to actually use?
 	public static double[] GetInput( Vector3 position, Vector3 velocity, Vector3 angularVelocity )
 	{
 		return new double[] { 
-			position.x, position.y, position.z, 
+			// position.x, position.y, position.z, 
 			velocity.x, velocity.y, velocity.z, velocity.magnitude, velocity.sqrMagnitude,
 			angularVelocity.x, angularVelocity.y, angularVelocity.z, angularVelocity.magnitude, angularVelocity.sqrMagnitude
 		};
@@ -63,13 +66,9 @@ public class RegressionMappingVelocityExample : MonoBehaviour
 		while( true )
 		{
 			// animate, one position per frame
-			for( int i = 0; i < myInputs.Count; i++ )
+			for( int i = 0; i < myPositions.Count; i++ )
 			{
-				transform.position = new Vector3(
-					(float) myInputs[i][0], 
-					(float) myInputs[i][1],
-					(float) myInputs[i][2]
-				);
+				transform.position = myPositions[i];
 				yield return null;
 			}
 
@@ -77,11 +76,7 @@ public class RegressionMappingVelocityExample : MonoBehaviour
 			yield return new WaitForSeconds( 0.5f );
 
 			// spend 0.1 seconds in first position
-			transform.position = new Vector3(
-				(float) myInputs[0][0],
-				(float) myInputs[0][1],
-				(float) myInputs[0][2]
-			);
+			transform.position = myPositions[0];
 
 			yield return new WaitForSeconds( 0.1f );
 		}
