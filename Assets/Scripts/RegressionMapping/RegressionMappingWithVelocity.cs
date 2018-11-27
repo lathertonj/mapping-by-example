@@ -29,6 +29,8 @@ public class RegressionMappingWithVelocity : MonoBehaviour
     private RegressionMappingVelocityExample intersectingExample = null;
     private RegressionMappingVelocityExample currentlyPlacingExample = null;
 
+    public GroundVisualizer ground;
+
     // TODO: visualize spheres better (I wonder if they could glow the closer you are to them?)
     // TODO: make the deletion process more smooth in appearance?
 
@@ -71,7 +73,7 @@ public class RegressionMappingWithVelocity : MonoBehaviour
                 EnterExamplesMode();
 
             }
-            else
+            else if( RegressionMappingVelocityExample.GetAllExamples().Count > 0 )
             {
                 // switch to runtime mode
                 // EnterRuntimeMode();
@@ -231,6 +233,9 @@ public class RegressionMappingWithVelocity : MonoBehaviour
 
         // turn back on sound
         GetComponent<ChuckSubInstance>().SetRunning( true );
+
+        // show on ground
+        ground.EnterRuntimeMode();
     }
 
     IEnumerator EnterRuntimeModeSlowly()
@@ -253,6 +258,9 @@ public class RegressionMappingWithVelocity : MonoBehaviour
 
         // turn back on sound
         GetComponent<ChuckSubInstance>().SetRunning( true );
+
+        // show on ground
+        ground.EnterRuntimeMode();
     }
 
     void SendTrainingExamples( int which_regression )
@@ -282,6 +290,9 @@ public class RegressionMappingWithVelocity : MonoBehaviour
         {
             regression.ResetRegression();
         }
+
+        // show on ground
+        ground.EnterExamplesMode();
     }
 
     void MakeNewExample()

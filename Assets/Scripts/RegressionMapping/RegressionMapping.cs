@@ -30,6 +30,8 @@ public class RegressionMapping : MonoBehaviour
     private TextMesh myText;
     private RegressionMappingExample intersectingExample = null;
 
+    public GroundVisualizer ground;
+
     // TODO: visualize spheres better (I wonder if they could glow the closer you are to them?)
     // TODO: make the deletion process more smooth in appearance
 
@@ -67,7 +69,7 @@ public class RegressionMapping : MonoBehaviour
                 EnterExamplesMode();
 
             }
-            else
+            else if( RegressionMappingExample.GetAllExamples().Count > 0 )
             {
                 // switch to runtime mode
                 EnterRuntimeMode();
@@ -236,6 +238,9 @@ public class RegressionMapping : MonoBehaviour
 
         // turn back on sound
         GetComponent<ChuckSubInstance>().SetRunning( true );
+
+        // show on ground
+        ground.EnterRuntimeMode();
     }
 
     void EnterExamplesMode()
@@ -251,6 +256,9 @@ public class RegressionMapping : MonoBehaviour
         {
             regression.ResetRegression();
         }
+
+        // show on ground
+        ground.EnterExamplesMode();
     }
 
     void MakeNewExample()
