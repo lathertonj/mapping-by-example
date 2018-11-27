@@ -97,6 +97,11 @@ public class RegressionMappingVelocityExample : MonoBehaviour
 		myRenderer.material.color = Color.red;
 	}
 
+	public void Highlight( Color c )
+	{
+		myRenderer.material.color = c;
+	}
+
 	public void ResetHighlight()
 	{
 		myRenderer.material.color = myOriginalColor;

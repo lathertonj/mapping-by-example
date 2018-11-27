@@ -101,11 +101,19 @@ public class RegressionMappingWithVelocity : MonoBehaviour
         if( Controller.GetPressDown( SteamVR_Controller.ButtonMask.Touchpad ) )
         {
             // first check if we are intersecting
-            if( intersectingExample != null && touchpadPos.y < -0.3f )
+            if( intersectingExample != null && inPlaceExamplesMode )
             {
-                // delete the example
-                Destroy( intersectingExample.gameObject );
-                intersectingExample = null;
+                if( touchpadPos.y < -0.3f )
+                {
+                    // delete the example
+                    Destroy( intersectingExample.gameObject );
+                    GetComponent<ChuckSubInstance>().SetRunning( false );
+                    intersectingExample = null;
+                }
+                else
+                {
+                    // do nothing
+                }
             }
             else if( inPlaceExamplesMode )
             {
@@ -131,10 +139,19 @@ public class RegressionMappingWithVelocity : MonoBehaviour
         if( touchpadPos != Vector2.zero )
         {
             // first check if we are intersecting
-            if( intersectingExample != null && touchpadPos.y < -0.3f )
+            if( intersectingExample != null && inPlaceExamplesMode )
             {
-                myText.text = "Delete current example";
-                intersectingExample.Highlight();
+                if( touchpadPos.y < -0.3f )
+                {
+                    myText.text = "Delete current example";
+                    intersectingExample.Highlight( Color.red );
+                }
+                else
+                {
+                    // only show the text and do the highlight in examples mode
+                    myText.text = "Preview current example";
+                    intersectingExample.Highlight( Color.yellow );
+                }
             }
             else if( inPlaceExamplesMode )
             {
@@ -155,13 +172,19 @@ public class RegressionMappingWithVelocity : MonoBehaviour
                 myText.text = "Capture current sound as preset";
             }
         }
+        else if( intersectingExample != null && inPlaceExamplesMode )
+        {
+            // only show the text and do the highlight in examples mode
+            myText.text = "Preview current example";
+            intersectingExample.Highlight( Color.yellow );
+        }
         else
         {
             myText.text = "";
         }
 
         // undo highlight
-        if( intersectingExample != null && touchpadPos.y >= -0.3f )
+        if( intersectingExample != null && !inPlaceExamplesMode )
         {
             intersectingExample.ResetHighlight();
         }
@@ -342,6 +365,11 @@ public class RegressionMappingWithVelocity : MonoBehaviour
         if( maybeExample != null )
         {
             intersectingExample = maybeExample;
+            if( inPlaceExamplesMode )
+            {
+                mySynth.SetParams( intersectingExample.GetOut() );
+                GetComponent<ChuckSubInstance>().SetRunning( true );
+            }
         }
     }
 
@@ -352,6 +380,11 @@ public class RegressionMappingWithVelocity : MonoBehaviour
         if( maybeExample != null )
         {
             intersectingExample = maybeExample;
+            if( inPlaceExamplesMode )
+            {
+                mySynth.SetParams( intersectingExample.GetOut() );
+                GetComponent<ChuckSubInstance>().SetRunning( true );
+            }
         }
     }
 
@@ -363,6 +396,11 @@ public class RegressionMappingWithVelocity : MonoBehaviour
         {
             // color it back to white
             intersectingExample.ResetHighlight();
+
+            if( inPlaceExamplesMode )
+            {
+                GetComponent<ChuckSubInstance>().SetRunning( false );
+            }
 
             // forget it
             intersectingExample = null;
