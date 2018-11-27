@@ -50,7 +50,7 @@ public class RegressionMappingVelocityExample : MonoBehaviour
 		return new double[] { 
 			// position.x, position.y, position.z, 
 			velocity.x, velocity.y, velocity.z, velocity.magnitude, velocity.sqrMagnitude,
-			angularVelocity.x, angularVelocity.y, angularVelocity.z, angularVelocity.magnitude, angularVelocity.sqrMagnitude
+			// angularVelocity.x, angularVelocity.y, angularVelocity.z, angularVelocity.magnitude, angularVelocity.sqrMagnitude
 		};
 	}
 
